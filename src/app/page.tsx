@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, MapPin, ShieldCheck, Clock, FileCheck } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -10,14 +11,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 opacity-90" />
         
         <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col items-center text-center space-y-8">
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-white max-w-3xl">
-            Todos os Cartórios de Registro de Imóveis do Brasil em um só lugar
+          
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-white max-w-4xl leading-tight">
+            A certidão de matrícula do seu imóvel a alguns cliques
           </h1>
+          
           <p className="text-slate-300 md:text-xl max-w-2xl">
             Solicite a segunda via da sua certidão de matrícula online e receba diretamente no seu WhatsApp ou E-mail.
           </p>
 
-          <Card className="w-full max-w-3xl mt-8 shadow-2xl border-slate-700 bg-white/95 backdrop-blur-sm">
+          <Card className="w-full max-w-4xl mt-8 shadow-2xl border-slate-700 bg-white/95 backdrop-blur-sm text-left">
             <CardHeader>
               <CardTitle className="text-lg md:text-xl text-slate-800 flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-orange-600" />
@@ -25,24 +28,36 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form className="grid gap-4 md:grid-cols-4">
-                <div className="md:col-span-3 grid grid-cols-2 gap-4">
-                  <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600">
-                    <option value="" disabled defaultValue="">Selecione o Estado (UF)</option>
-                    <option value="SP">São Paulo</option>
-                    <option value="RJ">Rio de Janeiro</option>
-                    <option value="CE">Ceará</option>
-                  </select>
+              <form className="grid gap-4 md:grid-cols-12 items-end">
+                
+                <div className="md:col-span-8 grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Estado</label>
+                    <select className="flex h-12 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600">
+                      <option value="" disabled defaultValue="">Selecione...</option>
+                      <option value="SP">São Paulo</option>
+                      <option value="RJ">Rio de Janeiro</option>
+                      <option value="CE">Ceará</option>
+                    </select>
+                  </div>
 
-                  <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600" disabled>
-                    <option value="" disabled defaultValue="">Selecione a Cidade</option>
-                  </select>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Cidade</label>
+                    <select className="flex h-12 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600" disabled>
+                      <option value="" disabled defaultValue="">Selecione...</option>
+                    </select>
+                  </div>
                 </div>
 
-                <Button className="w-full font-bold shadow-lg" size="lg" type="button">
-                  <Search className="mr-2 h-4 w-4" />
-                  Buscar
-                </Button>
+                <div className="md:col-span-4">
+                  <Link href="/pedido" className="w-full">
+                    <Button className="w-full h-12 font-bold shadow-lg text-base whitespace-nowrap" size="lg">
+                      <Search className="mr-2 h-5 w-5" />
+                      Começar Pedido
+                    </Button>
+                  </Link>
+                </div>
+
               </form>
             </CardContent>
           </Card>
