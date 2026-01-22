@@ -1,12 +1,13 @@
 "use client";
 
-import { StepType } from "@/components/modules/steps/step-type";
 import { OrderProvider, useOrder } from "@/contexts/order-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StepType } from "@/components/modules/steps/step-type";
 import { StepLocation } from "@/components/modules/steps/step-location";
 import { StepProperty } from "@/components/modules/steps/step-property";
-import { StepCheckout } from "@/components/modules/steps/step-chekout";
+import { StepCheckout } from "@/components/modules/steps/step-checkout";
+import { StepSuccess } from "@/components/modules/steps/step-success";
 
 export default function PedidoPage() {
   return (
@@ -21,8 +22,13 @@ export default function PedidoPage() {
 function PedidoWizard() {
   const { step, prevStep } = useOrder();
 
+  if (step === 5) {
+    return <StepSuccess />;
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-700">
+      
       <div className="flex justify-between items-center mb-8 px-2 md:px-0">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center relative">

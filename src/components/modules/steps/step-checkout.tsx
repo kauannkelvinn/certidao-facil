@@ -19,7 +19,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function StepCheckout() {
-  const { data } = useOrder();
+  const { data, nextStep } = useOrder();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -34,8 +34,8 @@ export function StepCheckout() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = form;
 
   function onSubmit(formData: FormData) {
-    console.log("Enviando para pagamento...", { ...data, dadosPessoais: formData });
-    alert("Redirecionando para o Abacate Pay... (Simulação)");
+    console.log("Dados finais:", { ...data, dadosPessoais: formData });
+    nextStep(); 
   }
 
   const PRECO_CERTIDAO = 59.90;
