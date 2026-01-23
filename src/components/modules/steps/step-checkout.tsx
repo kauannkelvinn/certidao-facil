@@ -1,13 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, User, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useOrder } from "@/contexts/order-context";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, User, ShieldCheck } from "lucide-react";
 
 const formSchema = z.object({
   nome: z.string().min(3, "Nome completo é obrigatório"),
