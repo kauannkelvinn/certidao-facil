@@ -33,9 +33,21 @@ export function StepCheckout() {
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = form;
 
-  function onSubmit(formData: FormData) {
-    console.log("Dados finais:", { ...data, dadosPessoais: formData });
-    nextStep(); 
+  async function onSubmit(formData: FormData) {
+    try {
+      const pedidoCompleto = { ...data, dadosPessoais: formData };
+
+      await fetch('/api/novo-pedido', {
+          method: 'POST',
+          body: JSON.stringify(pedidoCompleto)
+      });
+
+      nextStep(); 
+
+    } catch (error) {
+      console.error("Erro ao salvar", error);
+      alert("Erro ao processar. Tente novamente.");
+    }
   }
 
   const PRECO_CERTIDAO = 59.90;

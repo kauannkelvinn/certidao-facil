@@ -1,9 +1,17 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, MapPin, ShieldCheck, Clock, FileCheck } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    localStorage.removeItem("certidao-facil-order");
+    console.log("Sessão limpa para novo pedido");
+  }, []);
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       
