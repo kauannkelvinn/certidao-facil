@@ -2,19 +2,48 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Copy, Smartphone } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle2, Copy, Smartphone, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useOrder } from "@/contexts/order-context";
+import { useRouter } from "next/navigation";
 
 export function StepSuccess() {
+  const { clearOrder } = useOrder();
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
+
+  const [timeLeft, setTimeLeft] = useState(15 * 60)
   
   const pixCode = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913CertidaoFacil6008Fortaleza62070503***6304E2CA";
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      clearOrder();
+      alert("O tempo para pagamento expirou. Por favor, inicie um novo pedido.");
+      router.push("/");
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, clearOrder, router]);
+
 
   const handleCopy = () => {
     navigator.clipboard.writeText(pixCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 max-w-2xl mx-auto text-center space-y-8">
@@ -27,13 +56,25 @@ export function StepSuccess() {
         </div>
         <h2 className="text-3xl font-bold text-slate-900">Pedido Realizado!</h2>
         <p className="text-slate-500 text-lg">
-          Agora basta realizar o pagamento para iniciarmos a emissão.
+          Pague agora para garantir a emissão imediata
         </p>
       </div>
 
-      <Card className="border-orange-200 bg-orange-50/50">
-        <CardContent className="pt-6 space-y-6">
+      <Card className="border-orange-200 bg-orange-50/50 relative overflow-hidden">
+        <div 
+          className="absolute top-0 left-0 h-1 bg-red-500 transition-all duration-1000 ease-linear"
+          style={{ width: `${(timeLeft / 900) * 100}%` }}
+        />
+
+        <CardContent className="pt-8 space-y-6">
           
+          <div className="flex flex-col items-center justify-center space-y-1">
+            <div className="flex items-center gap-2 text-red-600 font-bold bg-red-100 px-3 py-1 rounded-full text-sm">
+                <Clock className="h-4 w-4" />
+                Expira em: {formatTime(timeLeft)}
+            </div>
+          </div>
+
           <div className="space-y-2">
             <h3 className="font-semibold text-slate-900 flex items-center justify-center gap-2">
               <Smartphone className="h-5 w-5 text-orange-600" />
@@ -49,7 +90,7 @@ export function StepSuccess() {
             <img 
               src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${pixCode}`} 
               alt="QR Code PIX" 
-              className="h-48 w-48"
+              className="h-48 w-48 mix-blend-multiply"
             />
           </div>
 
@@ -74,6 +115,13 @@ export function StepSuccess() {
         </CardContent>
       </Card>
       
+      <button
+        onClick={() => { clearOrder(); router.push('/'); }}
+        className="text-sm text-slate-400 hover:text-red-500 underline transition-colors"
+      >
+        Cancelar pedido e voltar ao início
+      </button>
+
       <p className="text-xs text-slate-400">
         Dúvidas? Entre em contato com nosso suporte no rodapé da página.
       </p>
