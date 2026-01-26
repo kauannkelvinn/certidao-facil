@@ -14,6 +14,11 @@ interface OrderData {
     email: string;
     whatsapp: string;
   };
+  pixResponse?: {
+    code: string;
+    qrCodeUrl: string;
+    paymentId?: string;
+  }
 }
 
 interface OrderContextType {
