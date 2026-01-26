@@ -19,7 +19,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function StepCheckout() {
-  const { data, nextStep } = useOrder();
+  const { data, nextStep, updateData } = useOrder();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -41,11 +41,29 @@ export function StepCheckout() {
           method: 'POST',
           body: JSON.stringify(pedidoCompleto)
       });
+      
+      const pixRes = await fetch('/api/criar-pix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      
+      if (!pixRes.ok) throw new Error("Falha ao gerar PIX");
+      
+      const pixData = await pixRes.json();
+      
+      updateData({
+        ...data,
+        pixResponse: {
+          code: pixData.code,
+          qrCodeUrl: pixData.qrCodeUrl
+        }
+      })
 
       nextStep(); 
 
     } catch (error) {
-      console.error("Erro ao salvar", error);
+      console.error(error);
       alert("Erro ao processar. Tente novamente.");
     }
   }

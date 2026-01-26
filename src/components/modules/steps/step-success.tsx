@@ -8,13 +8,14 @@ import { useOrder } from "@/contexts/order-context";
 import { useRouter } from "next/navigation";
 
 export function StepSuccess() {
-  const { clearOrder } = useOrder();
+  const { clearOrder, data } = useOrder();
   const router = useRouter();
-  const [copied, setCopied] = useState(false);
 
+  const pixCode = data.pixResponse?.code || "Erro ao carregar código PIX";
+  const qrImage = data.pixResponse?.qrCodeUrl;
+
+  const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60)
-  
-  const pixCode = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913CertidaoFacil6008Fortaleza62070503***6304E2CA";
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -37,7 +38,6 @@ export function StepSuccess() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -88,7 +88,7 @@ export function StepSuccess() {
           <div className="flex justify-center p-4 bg-white rounded-lg border border-slate-200 w-fit mx-auto shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${pixCode}`} 
+              src={qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${pixCode}`} 
               alt="QR Code PIX" 
               className="h-48 w-48 mix-blend-multiply"
             />
