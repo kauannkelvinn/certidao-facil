@@ -11,7 +11,7 @@ export function Header() {
   return (
     <header className="border-b border-slate-200 bg-white sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        
+
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900">
           <div className="bg-orange-600 p-1.5 rounded-lg">
             <FileText className="h-6 w-6 text-white" />
@@ -32,9 +32,9 @@ export function Header() {
               <div className="flex items-center gap-2">
                 {session.user?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={session.user.image} 
-                    alt="Foto do usuário" 
+                  <img
+                    src={session.user.image}
+                    alt="Foto do usuário"
                     className="w-8 h-8 rounded-full border border-slate-200"
                   />
                 ) : (
@@ -42,7 +42,7 @@ export function Header() {
                     <User className="w-5 h-5 text-slate-600" />
                   </div>
                 )}
-                
+
                 <div className="hidden md:block text-sm">
                   <p className="font-medium text-slate-900">
                     Olá, {session.user?.name?.split(' ')[0]}
@@ -50,9 +50,15 @@ export function Header() {
                 </div>
               </div>
 
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Link href="/meus-pedidos">
+                <Button variant="ghost" size="sm" className="hidden md:flex">
+                  Meus Pedidos
+                </Button>
+              </Link>
+              
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => signOut()}
                 className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-2"
               >
@@ -62,19 +68,19 @@ export function Header() {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-                 <Link href="/">
-                    <Button variant="ghost" className="text-slate-600 hover:text-orange-600 hidden md:flex">
-                        Novo Pedido
-                    </Button>
-                 </Link>
-
-                <Button 
-                    onClick={() => signIn('google')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm"
-                >
-                    <LogIn className="w-4 h-4" />
-                    Entrar
+              <Link href="/">
+                <Button variant="ghost" className="text-slate-600 hover:text-orange-600 hidden md:flex">
+                  Novo Pedido
                 </Button>
+              </Link>
+
+              <Button
+                onClick={() => signIn('google')}
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm"
+              >
+                <LogIn className="w-4 h-4" />
+                Entrar
+              </Button>
             </div>
           )}
         </div>
