@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/modules/header";
 import { Footer } from "@/components/modules/footer";
 import { cn } from "@/lib/utils";
+import { NextAuthSessionProvider } from "@/providers/session-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={cn(inter.className, "min-h-screen flex flex-col bg-slate-50")}>
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <NextAuthSessionProvider>
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </NextAuthSessionProvider>
       </body>
     </html>
   );
