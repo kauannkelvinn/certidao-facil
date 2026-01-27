@@ -14,21 +14,24 @@ export async function POST(request: Request) {
 
     const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID!, serviceAccountAuth);
     await doc.loadInfo();
-    
     const sheet = doc.sheetsByIndex[0];
 
+    const dataAtual = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
     await sheet.addRow({
-        Data: new Date().toLocaleString('pt-BR'),
+        Data: dataAtual,
         Nome: body.dadosPessoais.nome,
         CPF: body.dadosPessoais.cpf,
-        WhatsApp: body.dadosPessoais.whatsapp,
+        Whatsapp: body.dadosPessoais.whatsapp,
         Email: body.dadosPessoais.email,
         Tipo: body.tipoCertidao,
         Estado: body.uf,
         Cidade: body.cidade,
         Cartorio: body.cartorioId,
         Matricula: body.matricula,
-        Status: "Aguardando Pagamento"
+        Status: "Aguardando Pagamento",
+        PixCopiaCola: body.pixResponse?.code || '',
+        PixUrl: body.pixResponse?.qrCodeUrl || ''
       });
   
       return NextResponse.json({ success: true });
