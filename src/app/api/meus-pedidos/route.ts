@@ -29,15 +29,20 @@ export async function GET() {
     const meusPedidos = rows
       .filter(row => row.get('Email')?.toLowerCase() === userEmail.toLowerCase())
       .map(row => ({
+        id: row.rowNumber,
         data: row.get('Data'),
         nome: row.get('Nome'),
-        tipo: row.get('Tipo'),
-        cartorio: row.get('Cartorio'),
+        cpf: row.get('CPF'),           
+        whatsapp: row.get('Whatsapp'), 
+        email: row.get('Email'),       
+        uf: row.get('Estado'),         
+        cidade: row.get('Cidade'),     
+        cartorioId: row.get('Cartorio'),
+        tipoCertidao: row.get('Tipo'),
+        matricula: row.get('Matricula'), 
         status: row.get('Status') || "Aguardando",
         pixCopiaCola: row.get('PixCopiaCola'),
         pixUrl: row.get('PixUrl'),
-        id: row.rowNumber
-
       }))
       .reverse();
 

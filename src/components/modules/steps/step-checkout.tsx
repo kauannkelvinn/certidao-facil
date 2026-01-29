@@ -68,31 +68,36 @@ export function StepCheckout() {
 
   async function onSubmit(formData: FormData) {
     try {
-      const pixRes = await fetch('/api/criar-pix', { 
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({}) 
+      const dadosParaPix = {
+        ...data,
+        dadosPessoais: formData
+      };
+
+      const pixRes = await fetch('/api/criar-pix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dadosParaPix)
       });
 
       if (!pixRes.ok) throw new Error("Falha ao gerar PIX");
       const pixData = await pixRes.json();
 
-      const pedidoComPix = { 
-        ...data, 
-        dadosPessoais: formData,
+      const pedidoFinal = {
+        ...dadosParaPix,
         pixResponse: {
-            code: pixData.code,
-            qrCodeUrl: pixData.qrCodeUrl
+          code: pixData.code,
+          qrCodeUrl: pixData.qrCodeUrl,
+          paymentId: pixData.paymentId
         }
       };
 
       await fetch('/api/novo-pedido', {
-          method: 'POST',
-          body: JSON.stringify(pedidoComPix)
+        method: 'POST',
+        body: JSON.stringify(pedidoFinal)
       });
 
-      updateData(pedidoComPix);
-      nextStep(); 
+      updateData(pedidoFinal);
+      nextStep();
 
     } catch (error) {
       console.error(error);

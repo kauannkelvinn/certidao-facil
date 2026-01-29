@@ -4,16 +4,20 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-// CORREÇÃO 1: Removemos Smartphone que não estava sendo usado
-import { CheckCircle2, Copy, Clock, ArrowLeft, Loader2 } from "lucide-react";
+import { CheckCircle2, Copy, Clock, ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 
-// CORREÇÃO 2: Definimos a "cara" do nosso Pedido para tirar o 'any'
 interface Pedido {
   id: number;
   data: string;
   nome: string;
-  tipo: string;
-  cartorio: string;
+  cpf: string;
+  email: string;
+  whatsapp: string;
+  uf: string;
+  cidade: string;
+  cartorioId: string;
+  tipoCertidao: string;
+  matricula: string;
   status: string;
   pixCopiaCola?: string;
   pixUrl?: string;
@@ -23,7 +27,7 @@ export default function DetalhesPedidoPage() {
   const { id } = useParams(); 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  // CORREÇÃO 3: Usamos o tipo Pedido | null
+  const [cloning, setCloning] = useState(false);
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -33,8 +37,6 @@ export default function DetalhesPedidoPage() {
       try {
         const res = await fetch("/api/meus-pedidos");
         const data = await res.json();
-        
-        // CORREÇÃO 4: Tipamos 'p' como Pedido e comparamos convertendo o ID para número
         const item = data.find((p: Pedido) => p.id === Number(id));
         
         if (item) {
@@ -51,6 +53,7 @@ export default function DetalhesPedidoPage() {
   }, [id]);
 
   function calcularTempoRestante(dataString: string) {
+    if (!dataString) return;
     const [datePart, timePart] = dataString.split(', ');
     const [day, month, year] = datePart.split('/').map(Number);
     const [hours, minutes, seconds] = timePart.split(':').map(Number);
@@ -78,6 +81,60 @@ export default function DetalhesPedidoPage() {
     }
   };
 
+  async function handleGerarNovoPix() {
+    if (!pedido) return;
+    setCloning(true);
+
+    try {
+        const dadosParaPix = {
+            dadosPessoais: {
+                nome: pedido.nome,
+                cpf: pedido.cpf,
+                email: pedido.email,
+                whatsapp: pedido.whatsapp
+            }
+        };
+
+        // 2. GERA O PIX
+        const pixRes = await fetch('/api/criar-pix', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosParaPix)
+         });
+   
+         if (!pixRes.ok) throw new Error("Falha ao gerar PIX");
+         const pixData = await pixRes.json();
+
+         const novoPedidoPayload = {
+            ...dadosParaPix, 
+            uf: pedido.uf,
+            cidade: pedido.cidade,
+            cartorioId: pedido.cartorioId,
+            tipoCertidao: pedido.tipoCertidao,
+            matricula: pedido.matricula,
+            pixResponse: {
+                code: pixData.code,
+                qrCodeUrl: pixData.qrCodeUrl,
+                paymentId: pixData.paymentId
+            }
+         };
+
+         await fetch('/api/novo-pedido', {
+            method: 'POST',
+            body: JSON.stringify(novoPedidoPayload)
+         });
+
+         alert("Novo PIX gerado com sucesso! Redirecionando...");
+         router.push('/meus-pedidos'); 
+
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao gerar novo PIX. Tente novamente.");
+    } finally {
+        setCloning(false);
+    }
+  }
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -101,8 +158,10 @@ export default function DetalhesPedidoPage() {
 
       <div className="space-y-4 text-center mb-8">
         <h2 className="text-2xl font-bold text-slate-900">Pedido #{pedido.id}</h2>
-        <p className="text-slate-500 capitalize">{pedido.tipo === 'inteiro-teor' ? 'Inteiro Teor' : pedido.tipo}</p>
-        <p className="text-sm text-slate-400">{pedido.cartorio}</p>
+        <p className="text-slate-500 capitalize">
+            {pedido.tipoCertidao === 'inteiro-teor' ? 'Inteiro Teor' : pedido.tipoCertidao}
+        </p>
+        <p className="text-sm text-slate-400">{pedido.cartorioId}</p>
       </div>
 
       <Card className="border-orange-200 bg-orange-50/50 relative overflow-hidden">
@@ -148,10 +207,21 @@ export default function DetalhesPedidoPage() {
                 </div>
              </>
           ) : (
-            <div className="text-center py-8 text-slate-500">
-                <Clock className="h-12 w-12 mx-auto mb-2 text-slate-300" />
-                <p>O tempo para pagamento deste QR Code expirou.</p>
-                <p className="text-sm">Por favor, faça um novo pedido.</p>
+            <div className="text-center py-8 text-slate-500 space-y-6">
+                <div>
+                    <Clock className="h-12 w-12 mx-auto mb-2 text-slate-300" />
+                    <p className="font-medium text-slate-900">QR Code Expirado</p>
+                    <p className="text-sm">Para segurança, o código antigo não é mais válido.</p>
+                </div>
+                
+                <Button 
+                    onClick={handleGerarNovoPix} 
+                    disabled={cloning}
+                    className="bg-orange-600 hover:bg-orange-700 text-white w-full max-w-xs"
+                >
+                    {cloning ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <RefreshCw className="mr-2 h-4 w-4"/>}
+                    Gerar Novo PIX Agora
+                </Button>
             </div>
           )}
 
