@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     const response = await payment.create({
       body: {
-        transaction_amount: 79.90, 
+        transaction_amount: 1.00, 
         description: 'Certidão Fácil - Emissão de Documento',
         payment_method_id: 'pix',
         payer: {
